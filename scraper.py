@@ -1,44 +1,49 @@
 from playwright.sync_api import sync_playwright
+from bs4 import BeautifulSoup
 
 def scrape_product(url):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
-        page.goto(url, timeout=60000)
+        try:
+            response = page.goto(url, timeout=60000)
+            if response.status != 200:
+                raise Exception(f"Failed to load page: {response.status}")
 
-        if 'flipkart' in url:
-            page.wait_for_selector('span.B_NuCI', timeout=10000)
-            title = page.query_selector('span.B_NuCI')
-            price = page.query_selector('div._30jeq3')
-            description = page.query_selector('div._1mXnXO')
-            features = page.query_selector_all('div._2418kt ul li')
+            page.wait_for_load_state('domcontentloaded')
+            html = page.content()
+            soup = BeautifulSoup(html, 'html.parser')
 
-        elif 'amazon' in url:
-            page.wait_for_selector('#productTitle', timeout=10000)
-            title = page.query_selector('#productTitle')
-            price = page.query_selector('.a-price .a-offscreen')
-            description = page.query_selector('#productDescription')
-            features = page.query_selector_all('#feature-bullets .a-list-item')
+            if 'amazon' in url:
+                title = soup.select_one('#productTitle')
+                price = soup.select_one('.a-price .a-offscreen')
+                features = [li.get_text(strip=True) for li in soup.select('#feature-bullets .a-list-item')]
+            elif 'flipkart' in url:
+                title = soup.select_one('span.B_NuCI')
+                price = soup.select_one('div._30jeq3')
+                features = [li.get_text(strip=True) for li in soup.select('div._2418kt ul li')]
+            else:
+                title = soup.title
+                price = None
+                features = [li.get_text(strip=True) for li in soup.select('li')][:10]
 
-        else:
-            browser.close()
             return {
-                "source": "Unknown",
-                "title": "Unsupported URL",
-                "price": "N/A",
-                "description": "Only Flipkart and Amazon are supported.",
-                "features": [],
+                "source": "Amazon" if 'amazon' in url else "Flipkart" if 'flipkart' in url else "Static Site",
+                "title": title.get_text(strip=True) if title else "N/A",
+                "price": price.get_text(strip=True) if price else "N/A",
+                "description": "Extracted from page",
+                "features": features,
                 "url": url
             }
 
-        data = {
-            "source": "Flipkart" if 'flipkart' in url else "Amazon",
-            "title": title.inner_text().strip() if title else "N/A",
-            "price": price.inner_text().strip() if price else "N/A",
-            "description": description.inner_text().strip() if description else "N/A",
-            "features": [f.inner_text().strip() for f in features if f.inner_text().strip()],
-            "url": url
-        }
-
-        browser.close()
-        return data
+        except Exception as e:
+            return {
+                "source": "Error",
+                "title": "Error",
+                "price": "N/A",
+                "description": str(e),
+                "features": [],
+                "url": url
+            }
+        finally:
+            browser.close()
