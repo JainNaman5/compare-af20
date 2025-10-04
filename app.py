@@ -17,14 +17,10 @@ def compare_products():
             return jsonify({"error": "Please provide at least one valid URL."}), 400
 
         results = []
-
         if url1:
-            result1 = scrape_product(url1)
-            results.append(result1)
-
+            results.append(scrape_product(url1))
         if url2:
-            result2 = scrape_product(url2)
-            results.append(result2)
+            results.append(scrape_product(url2))
 
         return jsonify({"comparison": results})
 
@@ -32,7 +28,7 @@ def compare_products():
         traceback.print_exc()
         return jsonify({"error": f"Internal server error: {str(e)}"}), 500
 
+
 # if __name__ == '__main__':
 #     print("Starting Flask server on http://127.0.0.1:5000/")
 #     app.run(debug=True, host='0.0.0.0', port=5000)
-
