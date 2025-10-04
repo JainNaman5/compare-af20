@@ -6,10 +6,11 @@ import traceback
 
 
 
-CORS(app, resources={r"/compare": {"origins": "https://compare-20.vercel.app"}})
+
 
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
+CORS(app, resources={r"/compare": {"origins": "https://compare-20.vercel.app"}})
 
 
 
@@ -39,4 +40,5 @@ def compare_products():
 # if __name__ == '__main__':
 #     print("Starting Flask server on http://127.0.0.1:5000/")
 #     app.run(debug=True, host='0.0.0.0', port=5000)
+
 
