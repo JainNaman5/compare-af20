@@ -39,7 +39,6 @@ Pygments==2.19.1
 PyMuPDF==1.26.3
 python-dateutil==2.9.0.post0
 pyttsx3==2.99
-pywin32==308
 pyzmq==26.2.1
 requests==2.32.5
 rich==14.1.0
@@ -52,4 +51,5 @@ typing_extensions==4.15.0
 urllib3==2.5.0
 wcwidth==0.2.13
 Werkzeug==3.1.3
+
 
