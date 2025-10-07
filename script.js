@@ -9,7 +9,7 @@ const modal = document.getElementById('modal');
 const modalMessage = document.getElementById('modal-message');
 const modalCloseBtn = document.getElementById('modal-close-btn');
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'https://feature-compare-i8tq.onrender.com';
 
 function showModal(message) {
     modalMessage.textContent = message;
@@ -153,3 +153,4 @@ function escapeHtml(text) {
     };
     return text.replace(/[&<>"']/g, m => map[m]);
 }
+
