@@ -5,7 +5,10 @@ from bs4 import BeautifulSoup
 import logging
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {
+    "origins": ["https://compare-af20.vercel.app", "http://localhost:3000"],
+    "supports_credentials": True
+}})
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -222,4 +225,5 @@ def home():
 #     print("Health check: http://127.0.0.1:5000/health")
 #     print("=" * 50)
 #     app.run(debug=True, host='0.0.0.0', port=5000)
+
 
